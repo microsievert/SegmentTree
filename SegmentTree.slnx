@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="SegmentTree/SegmentTree.vcxproj" Id="2fe252a3-c648-4bb4-8e86-dcf3d2c8137a" />
+</Solution>
