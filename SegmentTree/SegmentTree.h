@@ -19,6 +19,8 @@ SegmentTree* BuildSegmentTree(int* source, size_t len, int (*buildfunc)(int, int
 
 void UpdateSegmentTree(SegmentTree* tree, int index, int newVal);
 
+void DisposeSegmentTree(SegmentTree* tree);
+
 int GetSegRange(SegmentTree* tree, int l, int r);
 
 int GetSegValue(SegmentTree* tree, int index);

@@ -17,7 +17,7 @@ void BuildSegmentTreeInternal(SegmentTree* tree, int* source, int node, int l, i
 	tree->arr[node] = buildfunc(tree->arr[node * 2], tree->arr[node*2+1]);
 }
 
-int GetRangeInternal(SegmentTree* tree, int l, int r, int node, int cl, int cr, int (*aggregator)(int, int))
+int GetRangeInternal(SegmentTree* tree, int l, int r, int node, int cl, int cr)
 {
 	if (cl > r || cr < l)
 		return tree->combinerDefault;
@@ -27,7 +27,7 @@ int GetRangeInternal(SegmentTree* tree, int l, int r, int node, int cl, int cr, 
 
 	int newRangeCenter = (cl + cr) / 2;
 
-	return aggregator(GetRangeInternal(tree, l, r, node * 2, cl, newRangeCenter, aggregator), GetRangeInternal(tree, l, r, node * 2 + 1, newRangeCenter + 1, cr, aggregator));
+	return tree->combiner(GetRangeInternal(tree, l, r, node * 2, cl, newRangeCenter), GetRangeInternal(tree, l, r, node * 2 + 1, newRangeCenter + 1, cr));
 }
 
 void UpdateSegmentTreeInternal(SegmentTree* tree, int index, int newVal, int node, int l, int r)
@@ -78,9 +78,18 @@ void UpdateSegmentTree(SegmentTree* tree, int index, int newVal)
 	UpdateSegmentTreeInternal(tree, index, newVal, 1, 0, tree->len - 1);
 }
 
+void DisposeSegmentTree(SegmentTree* tree)
+{
+	if (tree == NULL)
+		return;
+
+	free(tree->arr);
+	free(tree);
+}
+
 int GetSegRange(SegmentTree* tree, int l, int r)
 {
-	return GetRangeInternal(tree, l, r, 1, 0, tree->len - 1, tree->combiner);
+	return GetRangeInternal(tree, l, r, 1, 0, tree->len - 1);
 }
 
 int GetSegValue(SegmentTree* tree, int index)
