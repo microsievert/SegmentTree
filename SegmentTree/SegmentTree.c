@@ -49,6 +49,21 @@ void UpdateSegmentTreeInternal(SegmentTree* tree, int index, int newVal, int nod
 	tree->arr[node] = tree->combiner(tree->arr[node * 2], tree->arr[node * 2 + 1]);
 }
 
+void TreeToArrInternal(SegmentTree* tree, int node, int l, int r, int* sourceArr)
+{
+	if (l == r)
+	{
+		sourceArr[l] = tree->arr[node];
+
+		return;
+	}
+
+	int newRangeCenter = (l + r) / 2;
+
+	TreeToArrInternal(tree, node * 2, l, newRangeCenter, sourceArr);
+	TreeToArrInternal(tree, node * 2 + 1, newRangeCenter + 1, r, sourceArr);
+}
+
 SegmentTree* BuildSegmentTree(int* source, size_t len, int (*buildfunc)(int, int), int combinerDefault)
 {
 	if (source == NULL)
@@ -76,6 +91,23 @@ SegmentTree* BuildSegmentTree(int* source, size_t len, int (*buildfunc)(int, int
 void UpdateSegmentTree(SegmentTree* tree, int index, int newVal)
 {
 	UpdateSegmentTreeInternal(tree, index, newVal, 1, 0, tree->len - 1);
+}
+
+void AddToSegmentTree(SegmentTree** tree, int value)
+{
+	SegmentTree* curTree = *tree;
+
+	int* sourceArr = calloc(curTree->len + 1, sizeof(int));
+
+	TreeToArrInternal(curTree, 1, 0, curTree->len - 1, sourceArr);
+
+	sourceArr[curTree->len] = value;
+
+	SegmentTree* newTree = BuildSegmentTree(sourceArr, curTree->len + 1, curTree->combiner, curTree->combinerDefault);
+
+	DisposeSegmentTree(curTree);
+
+	*tree = newTree;
 }
 
 void DisposeSegmentTree(SegmentTree* tree)
